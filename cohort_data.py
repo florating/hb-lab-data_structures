@@ -1,11 +1,60 @@
 """Functions to parse a file containing student data."""
 
+mydict = {
+    'all_houses':set,
+    'students_by_cohort':list,
+    'all_names_by_house':list
+}
+
+def open_file(filename):
+    """Open the file and store as a string. Store each line as a list.
+    Return a list of lists.
+    """
+    # Initialize file_list
+    # Open the file, store in a variable
+    # For loop: go through each line and save it in file_list (so it will be a list of strings)
+    # Return file_list
+    pass
+
+
+# def parse_line(line):
+#     """Return a list separated by each individual element in a given line of text (string)."""
+#     #Take in the list of data from the text file
+      #Split each line by "|" into a list
+#     #Return a list 
+#     pass
+
+"""
+def return_collection(filename, fxn_name):
+    Automates all functions that require iterating through text file to add targets to the collection.
+    Returns the collection. Or the function?
+    
+    # collection = create a new list/set/tuple?
+    collection = SOMETHING
+    # Open file and bind 'file_data' to a list of strings.
+    file_data = open(filename) 
+    # Look at each line in the file and parse, maybe store as a list? --> helper function
+    for line in file_data:
+        # Split the line by the delimiter "|", will return a list. Assign to a variable.
+        line_list = line.split('|')
+        
+        # CHECK: which dictionary is the keyword within?
+        if fxn_name in mydict:
+            # Assign the target string(s) in line_list to variables.
+            for target in targets:
+            # Perform the actions required of each function based on what is in a global dictionary...
+            # EG: all_houses fxn --> add the house to the set of houses.
+            houses.add(line_list[2])
+    # Close the file.
+    file_data.close()
+    pass
+"""
 
 def all_houses(filename):
     """Return a set of all house names in the given file.
 
     For example:
-      >>> unique_houses('cohort_data.txt')
+      >>> unique_houses('cohort_data.txt')         # means all_houses...
       {"Dumbledore's Army", 'Gryffindor', ..., 'Slytherin'}
 
     Arguments:
@@ -14,12 +63,20 @@ def all_houses(filename):
     Return:
       - set[str]: a set of strings
     """
-
+    # Create a new set.
     houses = set()
-
-    # TODO: replace this with your code
-
-    return houses
+    # Open the file and store in a variable.
+    file_data = open(filename) # returns a list of strings
+    # Look at each line in the file and parse, maybe store as a list? --> helper function
+    for line in file_data:
+        # Split the line by the delimiter "|", will return a list. Assign to a variable.
+        line_list = line.split('|')
+        # Add the house to the set of houses.
+        houses.add(line_list[2])
+    # Close the file.
+    file_data.close()
+    # Return the set of houses.
+    return houses - {''}
 
 
 def students_by_cohort(filename, cohort="All"):
@@ -51,9 +108,8 @@ def students_by_cohort(filename, cohort="All"):
     """
 
     students = []
-
-    # TODO: replace this with your code
-
+    # Open file, save variable.
+    
     return sorted(students)
 
 
@@ -70,7 +126,7 @@ def all_names_by_house(filename):
     - Instructors
 
     Each roster is a list of names sorted in alphabetical order.
-
+    
     For example:
       >>> rosters = hogwarts_by_house('cohort_data.txt')
       >>> len(rosters)
@@ -95,10 +151,31 @@ def all_names_by_house(filename):
     slytherin = []
     ghosts = []
     instructors = []
-
-    # TODO: replace this with your code
-
-    return []
+    
+    school_data = open(filename)
+    for line in school_data:
+      line_list = line.split("|")
+      first_name = line_list[0]
+      last_name = line_list[1]
+      name = first_name + " " +last_name
+      
+      if line_list[2].lower() == "dumbledore's army":
+        dumbledores_army.append(name)
+      elif line_list[2].lower() == "gryffindor":
+        gryffindor.append(name)
+      elif line_list[2].lower() == "hufflepuff":
+        hufflepuff.append(name)
+      elif line_list[2].lower() == "ravenclaw":
+        ravenclaw.append(name)
+      elif line_list[2].lower() == "slytherin":
+        slytherin.append(name)
+      elif line_list[4].lower() == "g":
+        ghosts.append(name)
+      elif line_list[4].lower() == "i":
+        instructors.append(name)
+    
+    school_data.close()
+    return [dumbledores_army, gryffindor, hufflepuff, ravenclaw, slytherin, ghosts, instructors]
 
 
 def all_data(filename):
