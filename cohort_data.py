@@ -6,49 +6,52 @@ mydict = {
     'all_names_by_house':list
 }
 
-def open_file(filename):
-    """Open the file and store as a string. Store each line as a list.
-    Return a list of lists.
+data_list_indices = {
+    'first_name':0,
+    'last_name':1,
+    'house':2,
+    'advisor':3,
+    'cohort':4
+}
+
+data_tuple_indices = {
+    'full_name':0,
+    'house':1,
+    'advisor':2,
+    'cohort':3
+}
+
+house_set = {'Gryffindor', 'Hufflepuff', 'Slytherin', 'Ravenclaw'}
+
+
+def all_data(filename):
+    """Return all the data in a file.
+
+    Each line in the file is a tuple of (full_name, house, advisor, cohort)
+
+    Iterate over the data to create a big list of tuples that individually
+    hold all the data for each person. (full_name, house, advisor, cohort)
+
+    For example:
+      >>> all_student_data('cohort_data.txt')
+      [('Harry Potter', 'Gryffindor', 'McGonagall', 'Fall 2015'), ..., ]
+
+    Arguments:
+      - filename (str): the path to a data file
+
+    Return:
+      - list[tuple]: a list of tuples
     """
-    # Initialize file_list
-    # Open the file, store in a variable
-    # For loop: go through each line and save it in file_list (so it will be a list of strings)
-    # Return file_list
-    pass
 
-
-# def parse_line(line):
-#     """Return a list separated by each individual element in a given line of text (string)."""
-#     #Take in the list of data from the text file
-      #Split each line by "|" into a list
-#     #Return a list 
-#     pass
-
-"""
-def return_collection(filename, fxn_name):
-    Automates all functions that require iterating through text file to add targets to the collection.
-    Returns the collection. Or the function?
-    
-    # collection = create a new list/set/tuple?
-    collection = SOMETHING
-    # Open file and bind 'file_data' to a list of strings.
-    file_data = open(filename) 
-    # Look at each line in the file and parse, maybe store as a list? --> helper function
+    all_data_list = []
+    file_data = open(filename)
     for line in file_data:
-        # Split the line by the delimiter "|", will return a list. Assign to a variable.
-        line_list = line.split('|')
-        
-        # CHECK: which dictionary is the keyword within?
-        if fxn_name in mydict:
-            # Assign the target string(s) in line_list to variables.
-            for target in targets:
-            # Perform the actions required of each function based on what is in a global dictionary...
-            # EG: all_houses fxn --> add the house to the set of houses.
-            houses.add(line_list[2])
-    # Close the file.
+        data = line.strip().split('|')
+        data[0:2] = ["{} {}".format(data[0], data[1])]
+        all_data_list.append(tuple(data))
     file_data.close()
-    pass
-"""
+    return all_data_list
+
 
 def all_houses(filename):
     """Return a set of all house names in the given file.
@@ -107,9 +110,12 @@ def students_by_cohort(filename, cohort="All"):
       - list[list]: a list of lists
     """
 
+    if cohort == "All":
+        cohort = '201'
     students = []
-    # Open file, save variable.
-    
+    for tup in all_data(filename):
+        if cohort in tup[data_tuple_indices['cohort']]:
+            students.append(tup[data_tuple_indices['full_name']])
     return sorted(students)
 
 
@@ -144,64 +150,23 @@ def all_names_by_house(filename):
       - list[list]: a list of lists
     """
 
-    dumbledores_army = []
-    gryffindor = []
-    hufflepuff = []
-    ravenclaw = []
-    slytherin = []
-    ghosts = []
-    instructors = []
-    
-    school_data = open(filename)
-    for line in school_data:
-      line_list = line.split("|")
-      first_name = line_list[0]
-      last_name = line_list[1]
-      name = first_name + " " +last_name
-      
-      if line_list[2].lower() == "dumbledore's army":
-        dumbledores_army.append(name)
-      elif line_list[2].lower() == "gryffindor":
-        gryffindor.append(name)
-      elif line_list[2].lower() == "hufflepuff":
-        hufflepuff.append(name)
-      elif line_list[2].lower() == "ravenclaw":
-        ravenclaw.append(name)
-      elif line_list[2].lower() == "slytherin":
-        slytherin.append(name)
-      elif line_list[4].lower() == "g":
-        ghosts.append(name)
-      elif line_list[4].lower() == "i":
-        instructors.append(name)
-    
-    school_data.close()
-    return [dumbledores_army, gryffindor, hufflepuff, ravenclaw, slytherin, ghosts, instructors]
+    my_roster = {
+        "Dumbledore's Army":0,
+        "Gryffindor":1,
+        "Hufflepuff":2,
+        "Ravenclaw":3,
+        "Slytherin":4,
+        "G":5,
+        "I":6
+    }
 
-
-def all_data(filename):
-    """Return all the data in a file.
-
-    Each line in the file is a tuple of (full_name, house, advisor, cohort)
-
-    Iterate over the data to create a big list of tuples that individually
-    hold all the data for each person. (full_name, house, advisor, cohort)
-
-    For example:
-      >>> all_student_data('cohort_data.txt')
-      [('Harry Potter', 'Gryffindor', 'McGonagall', 'Fall 2015'), ..., ]
-
-    Arguments:
-      - filename (str): the path to a data file
-
-    Return:
-      - list[tuple]: a list of tuples
-    """
-
-    all_data = []
-
-    # TODO: replace this with your code
-
-    return all_data
+    rosters = [list() for x in range(7)]
+    for tup_person in all_data(filename):
+        category = tup_person[1] or tup_person[3]   # category = tup_person[3] only if tup_person[1] evaluates to False
+        rosters[my_roster[category]].append(tup_person[0])
+    for roster in rosters:
+        roster.sort()
+    return rosters
 
 
 def get_cohort_for(filename, name):
@@ -224,8 +189,35 @@ def get_cohort_for(filename, name):
     Return:
       - str: the person's cohort or None
     """
+    person_list = get_target_info(filename, name)
+    if person_list != None:
+        return person_list[data_list_indices['cohort']]
 
-    # TODO: replace this with your code
+
+def get_target_info(filename, name):
+    """Return list of parsed strings for the target individual's data within the file.
+    
+    >>> get_target_info('cohort_data.txt', 'Harry Potter')
+    ['Harry', 'Potter', 'Gryffindor', 'McGonagall', 'Fall 2015']
+
+    Arguments:
+     - filename (str): the path to a data file
+     - name (str): a person's full name
+
+    Return:
+     - list: containing parsed strings of data related to this individual, split by delimiter '|'
+    """
+    if name == '' or ' ' not in name:
+        return None
+    answer = None
+    file_data = open(filename)
+    transformed_name = name.strip().split(' ')
+    target = transformed_name[0] + '|' + transformed_name[1]
+    for line in file_data:
+        if target in line:
+            answer = line.strip().split('|')
+    file_data.close()
+    return answer
 
 
 def find_duped_last_names(filename):
@@ -241,8 +233,23 @@ def find_duped_last_names(filename):
     Return:
       - set[str]: a set of strings
     """
-
-    # TODO: replace this with your code
+    # Create a new list.
+    last_names = set()
+    duplicated = set()
+    # Open the file and store in a variable.
+    file_data = open(filename) # returns a list of strings
+    # Repeat the following lines of code for each line in file_data.
+    for line in file_data:
+        # Split the line by the delimiter "|", will return a list. Assign to a variable.
+        line_list = line.split('|')
+        # Check if this last name already exists in last_names.
+        if line_list[1] in last_names:
+            duplicated.add(line_list[1])
+        last_names.add(line_list[1])
+    # Close the file.
+    file_data.close()
+    # Return the set of duplicated last names.
+    return duplicated
 
 
 def get_housemates_for(filename, name):
@@ -257,7 +264,16 @@ def get_housemates_for(filename, name):
     {'Angelina Johnson', ..., 'Seamus Finnigan'}
     """
 
-    # TODO: replace this with your code
+    list_student = get_target_info(filename, name)
+    if list_student != None:
+        house = list_student[2]
+        cohort = list_student[4]
+        # print(f"Target house is {house} and target cohort is {cohort}.")
+    housemates = []
+    for tup in all_data(filename):
+        if house in tup and cohort in tup and name not in tup:
+            housemates.append(tup[0])
+    return set(housemates)
 
 
 ##############################################################################
